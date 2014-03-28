@@ -20,6 +20,9 @@ function Paddle(x, y) {
     this.getBottom = function(){
         return that.y + that.height;
     }
+    this.getRight = function(){
+        return that.x + that.width
+    }
 
 
 };
@@ -32,7 +35,7 @@ function Ball(canvas) {
     this.y = canvas.width / 2;
     this.width = 10;
     this.height = 10;
-    this.xVelocity = 0;
+    this.xVelocity = -200;
     this.yVelocity = -200;
 }
 
@@ -70,12 +73,39 @@ function Game() {
 
     this.update = function(modifier) {
         that.checkInput(modifier);
+        that.checkCollisions()
 
         that.paddle1.y += that.paddle1.yVelocity * modifier;
+        that.paddle2.y += that.paddle2.yVelocity * modifier;
         that.ball.x += that.ball.xVelocity * modifier;
         that.ball.y += that.ball.yVelocity * modifier;
 
     };
+
+
+    this.checkCollisions = function() {
+        if (that.ball.y <= 0) {
+            that.ball.yVelocity *= -1
+        }
+
+        else if (that.ball.y + that.ball.height >= that.canvas.height) {
+            that.ball.yVelocity *= -1
+        }
+
+        if (that.ball.x < that.paddle1.getRight() 
+            && that.ball.y > that.paddle1.y
+            && that.ball.y < that.paddle1.getBottom()) {
+            that.ball.xVelocity *= -1
+        }
+
+        else if (that.ball.x > that.paddle2.x 
+                 && that.ball.y > that.paddle1.y
+                 && that.ball.y < that.paddle1.getBottom()) {
+                 that.ball.xVelocity *= -1
+        }
+
+
+    }
 
 
     this.checkInput = function(modifier) {
@@ -101,6 +131,31 @@ function Game() {
 
         else {
             that.paddle1.yVelocity = 0;
+        }
+
+        if (87 in that.keysDown) {
+            if (that.paddle2.y > 0) {
+                that.paddle2.yVelocity = (-400);
+            }
+            else {
+                that.paddle2.y = 0;
+                that.paddle2.yVelocity = 0;
+            }
+        }
+
+        else if (83 in that.keysDown) {
+            if (that.paddle2.getBottom() < that.canvas.height) {
+                that.paddle2.yVelocity = 400;
+            }
+
+            else {
+                that.paddle2.y = (that.canvas.height - that.paddle2.height);
+                that.paddle2.yVelocity = 0;
+            }
+        }
+
+        else {
+            that.paddle2.yVelocity = 0;
         }
 
 
